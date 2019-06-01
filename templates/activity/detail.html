@@ -78,17 +78,16 @@
                 {% if guests %}
                     {% for guest in guests %}
                         <div class="col-sm-2 col-md-2">
-                             <div class="avatar-view guest-avatar" title="点击更改嘉宾签到状态" >
-                                <a class="thumbnail" href="{% url 'activityApp:guest' activity.id guest.id %}">
+                             <div title= 学号：{{ guest.std_num }}>
+                                <a href="{% url 'activityApp:guest' activity.id guest.id %}">
                                     {% if guest in signed_guest_list %}
-                                    <img src="{{guest.profile.avatar.url}}" alt="用户头像">
+                                    <img class="thumbnail guest-avatar" src="{{guest.profile.avatar.url}}" alt="用户头像">
                                     {% else %}
-                                    <img src="/media/avatar/default.png" alt="默认头像">
+                                    <img class="thumbnail guest-avatar" src="/media/avatar/default.png" alt="默认头像">
                                     {% endif %}
                                 </a>
                              </div>
-                            <p style="margin-top: 5px;margin-left: 10px"><span class="glyphicon glyphicon-user"></span> {{ guest.username }}</p>
-                            <p> ({{ guest.std_num }})</p>
+                            <p style="margin-top: 10px;margin-left: 10px"><span class="glyphicon glyphicon-user"></span> {{ guest.username }}</p>
                         </div>
                 {% endfor %}
                 {% else %}
@@ -104,7 +103,7 @@
                     <div class="panel-heading">活动创建者</div>
                       <div class="panel-body">
                           <div class="col-sm-4 col-md-4">
-                             <a href="#" class="thumbnail creator-avatar">
+                             <a href="#" class="thumbnail avatar">
                                  <img src="{{ activity.creator.profile.avatar.url }}"  alt="img loading...">
                              </a>
                          </div>
@@ -184,9 +183,9 @@
      <div class="modal fade bs-example-modal-sm" id="signModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
-          <div class="camera-container">
-            <video class="camera" width="640" height="480" id="video" preload autoplay loop muted style="position: absolute"></video>
-            <canvas class="camera" width="640" height="480" id="canvas" style="position: absolute"></canvas>
+          <div class="container">
+            <video width="640" height="480" id="video" preload autoplay loop muted style="position: absolute"></video>
+            <canvas width="640" height="480" id="canvas" style="position: absolute"></canvas>
               <div class="label label-success show-sign-status" style="position: absolute;font-size: 15px"></div>
           </div>
         </div>

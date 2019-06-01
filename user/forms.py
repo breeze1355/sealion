@@ -70,5 +70,4 @@ class ImageForm(forms.ModelForm):
 
 
 class AvatarUploadForm(forms.Form):
-    avatar = forms.ImageField(label=" ", required=True,
-                               widget=forms.FileInput(attrs={'class': 'form-control'}))
+    avatar = forms.ImageField(label=" ", max_length=256, required=True)
