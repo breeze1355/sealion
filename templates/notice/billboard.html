@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load bootstrap3 %}
+{% block title %}Sea Lion - 公告{% endblock %}
+{% block content %}
+    <!-- Page Content -->
+    <div class="container">
+
+        <h1 class="page-header">
+            公告栏
+            <small>Billboard</small>
+            {% if request.user.is_staff %}
+                <a class="btn btn-primary"  data-toggle="modal" data-target="#insertModal">发布公告 <span class="glyphicon glyphicon glyphicon-edit"></span></a>
+             {% endif %}
+            <br>
+            {% if notice_insert_message %}
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h5>{{ notice_insert_message }}</h5>
+                </div>
+            {% endif %}
+            {% if request.user.is_authenticated %}
+                {% if request.session.nav_msg %}
+                    <div class="alert alert-warning alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h5>您没有上传个人照片不能加入任何活动，请尽快到<a href="{% url 'userApp:profile' %}" class="alert-link">个人中心</a>完善个人资料</h5>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </h1>
+
+        <div class="row">
+          <table class="table table-hover" style="margin-left: 10px">
+            <tbody>
+              {% for notice in Billboard %}
+                  <tr>
+                    <td style="font-size: medium"><a href="{% url 'noticeApp:detail' notice.id %}" target="_blank">{{ notice.title }}</a></td>
+                    <td><span class="glyphicon glyphicon-time"></span> {{ notice.c_time }}</td>
+                  </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+    </div><!-- Billboard Well -->
+
+
+    <div class="pager" >
+      <span class="step-links">
+        {% if Billboard.has_previous %}
+          <li class="previous"><a href="?page={{ Billboard.previous_page_number }}"><span aria-hidden="true">&larr;</span>上一页</a>
+        {% endif %}
+          {% if Billboard.has_next %}
+            <li class="next"><a href="?page={{ Billboard.next_page_number }}">下一页<span aria-hidden="true">&rarr;</span></a>
+        {% endif %}
+          <span class="current">
+              {% if Billboard.number and Billboard.paginator.num_pages%}
+                第 {{ Billboard.number }} 页，共 {{ Billboard.paginator.num_pages }} 页
+              {% else %}
+                第 1 页，共 1 页
+              {% endif %}
+          </span>
+      </span>
+    </div><!-- Pager -->
+
+    <!-- /.container -->
+
+     <!-- update notice Modal -->
+    <div class="modal fade" id="insertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">发布公告</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form" action="{% url 'noticeApp:insert'%}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% bootstrap_form insert_form %}
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit"  class="btn btn-primary">确定</button>
+                  </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div><!-- /.update notice Modal -->
+
+{% endblock %}

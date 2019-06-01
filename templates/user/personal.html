@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load bootstrap3 %}      <!-- 加载bootstrap3应用  -->
+{% load cache %}
+{% block title %}Sea Lion - 个人主页{% endblock %}
+{% block css %}
+{#<link href="{% static 'cropper/cropper.min.css' %}" rel="stylesheet">#}
+{#<link href="{% static 'sitelogo/sitelogo.css' %}" rel="stylesheet">#}
+<link href="{% static 'css/personal.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% cache 600 sidebar request.user.username %}
+    {% block content %}
+
+        <div class="container" style="margin-top: 10px" >
+
+            <div class="col-md-2">
+                <ul class="nav nav-pills nav-stacked">
+                  <li role="presentation" class="active"><a href="{% url 'userApp:profile' %}">个人资料</a></li>
+                  <li role="presentation" ><a href="{% url 'userApp:created'%}">我创建的活动</a></li>
+                  <li role="presentation"><a href="{% url 'userApp:joined'%}">我加入的活动</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-10">
+
+                <div class="panel panel-default personal-panel">
+                    <div class="panel-body">
+                        <h3 style="margin-left: 30px">个人资料</h3>
+                        {% if updateInfoMessage %}
+                            <div class="alert alert-danger alert-dismissible" role="alert">
+                              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h5>{{ updateInfoMessage }}</h5>
+                            </div>
+                        {% endif %}
+                        <hr>
+                        <div class="panel-content">
+                            <div class="col-lg-3">
+                                <div class="content">
+                                   <div class="row">
+                                      <div id="avatar" class="col-md-12">
+                                          <img class="img-circle avatar-view" src="{{ request.user.profile.avatar.url }}"  alt="Avatar">
+                                          <div class="col-md-8 text-center " style="padding-top: 10px"><a role="button" data-toggle="modal" data-target="#avatarModal">修改头像</a></div>
+                                      </div>
+                                   </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+
+                                <h4 style="padding: 10px;margin-left: 20px;font-size: medium">ID:  {{ request.user.nick_name }}</h4>
+
+                                <hr>
+                                <div class="col-md-12 ">
+                                <div class="col-md-10"><h5 >昵称：{{ request.user.nick_name }}</h5></div>
+                                <div class="col-md-2"><a role="button" data-toggle="modal" data-target="#userInfoModal" >修改资料</a></div>
+                                </div>
+
+                                <div class="col-md-12">
+                                <div class="col-md-10"><h5>实名：{{ request.user.username }}</h5></div>
+                                <br>
+                                <div class="col-md-10"><h5>学号：{{ request.user.std_num }}</h5></div>
+                                <br>
+                                <div class="col-md-10"><h5>班级：{{ request.user.std_class }}</h5></div>
+                                <br>
+                            </div>
+
+                                <div class="col-md-12">
+                                    <div class="col-md-10">
+                                        <h5>个人照片：
+                                            {% if request.session.uploaded %}
+                                                已上传
+                                            {% else %}
+                                                <a role="button" data-toggle="modal" data-target="#imgRecModal" >上传图片</a>
+                                            {% endif %}
+                                        </h5>
+                                    </div>
+                                    {% if request.session.uploaded %}
+                                        <div class="col-md-2"><a role="button" data-toggle="modal" data-target="#imgRecModal" >重新上传</a></div>
+                                    {% endif %}
+                            </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="userInfoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">修改个人信息</h4>
+                  </div>
+                  <div class="modal-body">
+                    <form class="form" action="{% url 'userApp:update' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% bootstrap_form update_form %}
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                            <button type="submit"  class="btn btn-primary">保存</button>
+                          </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div><!-- /userInfoModal -->
+
+            <div class="modal fade" id="avatarModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                     <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">上传头像</h4>
+                      </div>
+                  <div class="modal-body">
+                    <form class="form" action="{% url 'userApp:avatar' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% bootstrap_form avatar_form %}
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="submit" class="btn btn-primary">保存</button>
+                          </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div><!-- /imgRecModal -->
+
+            <div class="modal fade" id="imgRecModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                     <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">上传个人照片</h4>
+                      </div>
+                  <div class="modal-body">
+                    <form class="form" action="{% url 'userApp:upload' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% bootstrap_form image_form %}
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="submit" id="saveButton" data-loading-text="正在上传中..." class="btn btn-primary">保存</button>
+                          </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div><!-- /imgRecModal -->
+
+        </div>
+
+
+    {% endblock %}
+
+{% endcache %}
+
+{% block js %}
+    <script src="{% static 'cropper/cropper.min.js' %}"></script>
+    <script src="{% static 'sitelogo/sitelogo.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/myJS.js' %}"></script>
+{% endblock %}
+

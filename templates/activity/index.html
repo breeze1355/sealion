@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load bootstrap3 %}
+{% block title %}Sea Lion - 主页{% endblock %}
+{% block content %}
+    <!-- Page Content -->
+    <div class="container">
+
+        <div class="row">
+
+            <!-- Entries Column -->
+            <div class="col-md-8">
+                <h1 class="page-header">
+                    活动列表
+                    <small>activities list</small>
+                    {% if request.user.is_authenticated %}
+                         <a class="btn btn-success"  data-toggle="modal" data-target="#applyModal">创建活动 <span class="glyphicon glyphicon glyphicon-plus"></span></a>
+                        <hr>
+                        {% if message %}
+                            <div class="alert alert-danger alert-dismissible" role="alert">
+                              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h5 style="vertical-align: middle">{{ message }}</h5>
+                            </div>
+                        {% endif %}
+                        {% if request.session.nav_msg %}
+                            <div class="alert alert-warning alert-dismissible" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h5>您没有上传个人照片不能加入任何活动，请尽快到<a href="{% url 'userApp:profile' %}" class="alert-link">个人中心</a>完善个人资料</h5>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </h1>
+
+                {% for activity in activities_list %}
+                    <div class="col-sm-6">
+                        <h2>
+                            {% if activity.title|length > 7 %}
+                                <a href="{% url 'activityApp:detail' activity.id %}" target="_blank">{{ activity.title| truncatechars:7 }}...</a>
+                                {% else %}
+                                <a href="{% url 'activityApp:detail' activity.id %}" target="_blank">{{ activity.title }}</a>
+                            {% endif %}
+                            {% if activity.isActive %}
+                                <small>正在签到</small>
+                            {% else %}
+                                <small>尚未开始</small>
+                            {% endif %}
+                        </h2>
+                        <p><span class="glyphicon glyphicon-time"></span> {{ activity.start_time | date:"Y年m月d日 H:i"}}</p>
+                        <p><span class="glyphicon glyphicon-user"></span> {{ activity.creator }}</p>
+                        <p><span class="glyphicon glyphicon-map-marker"></span> {{ activity.address| truncatechars:15 }}</p>
+                        {% if activity.desc|length > 25 %}
+                            <p><span class="glyphicon glyphicon-tag"></span> {{ activity.desc|default:"无" | truncatechars:25}}...</p>
+                            {% else %}
+                            <p><span class="glyphicon glyphicon-tag"></span> {{ activity.desc|default:"无"}}</p>
+                        {% endif %}
+                        <hr>
+                    </div>
+                {% endfor %}
+
+                <!-- Pager -->
+                <div class="col-md-10">
+                    <div class="pager" >
+                      <span class="step-links">
+                        {% if activities_list.has_previous %}
+                          <li class="previous"><a href="?page={{ activities_list.previous_page_number }}"><span aria-hidden="true">&larr;</span>上一页</a>
+                        {% endif %}
+                          {% if activities_list.has_next %}
+                            <li class="next"><a href="?page={{ activities_list.next_page_number }}">下一页<span aria-hidden="true">&rarr;</span></a>
+                        {% endif %}
+                          <span class="current">
+
+                                第 {{ activities_list.number }} 页，共 {{ activities_list.paginator.num_pages }} 页
+
+                          </span>
+                      </span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!--Sidebar Widgets Column -->
+            <div class="col-md-4 ">
+                <!-- Search Well -->
+                <div class="well">
+                    <h4>搜SeaLion</h4>
+                    <form method="get" action="{% url 'activityApp:search' %}" target="_blank">
+                        <div class="input-group">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="活动名称/创建人/活动地址" name="activity_msg">
+                            </div>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                            </span>
+                        </div>
+                    </form>
+                    <!-- /.input-group -->
+                </div>
+
+                <!-- Billboard Well -->
+                <div class="well well-lg">
+                    <h4><span class="glyphicon glyphicon-bookmark"></span> <a href="{% url 'noticeApp:billboard' %}" target="_blank">公告栏</a></h4>
+                    {% for notice in Billboard %}
+                        <div class="panel panel-success">
+                          <div class="panel-heading"><span class="glyphicon glyphicon-time"></span> {{ notice.c_time | date:"Y年m月d日" }}</div>
+                          <div class="panel-body">
+                              <span class="glyphicon glyphicon-bullhorn"></span> <a href="{% url 'noticeApp:detail' notice.id %}" target="_blank">{{ notice.title }}</a>
+                          </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                </div>
+
+        </div>
+        <!-- /.row -->
+
+    </div>
+    <!-- /.container -->
+
+    <!-- Modal -->
+    <div class="modal fade" id="applyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">申请活动</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form" action="{% url 'activityApp:apply' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% bootstrap_form apply_form %}
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="submit"  class="btn btn-primary">确定</button>
+                  </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}

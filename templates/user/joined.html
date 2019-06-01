@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load bootstrap3 %}      <!-- 加载bootstrap3应用  -->
+{% block title %}Sea Lion - 我加入的活动{% endblock %}
+
+{% block content %}
+    <div class="container" style="margin-top: 10px">
+        <div class="col-md-3">
+            <ul class="nav nav-pills nav-stacked personal-nav">
+              <li role="presentation"><a href="{% url 'userApp:profile' %}">个人资料</a></li>
+              <li role="presentation"><a href="{% url 'userApp:created'%}">我创建的活动</a></li>
+              <li role="presentation" class="active"><a href="{% url 'userApp:joined'%}">我加入的活动</a></li>
+            </ul>
+        </div>
+
+        <div class="col-md-9 panel-content-custom">
+                <h1 class="page-header">
+                    我加入的活动
+                    <br>
+                    <small>The activities I joined</small>
+                </h1>
+                {% for activity in joined_activities_list %}
+                    <div class="col-sm-6">
+                        <h2>
+                             {% if activity.title|length > 7 %}
+                                <a href="{% url 'activityApp:detail' activity.id %}" target="_blank">{{ activity.title| truncatechars:7 }}...</a>
+                                {% else %}
+                                <a href="{% url 'activityApp:detail' activity.id %}" target="_blank">{{ activity.title }}</a>
+                            {% endif %}
+                            {% if activity.isActive %}
+                                <small>正在签到</small>
+                            {% else %}
+                                <small>未开始签到</small>
+                            {% endif %}
+                        </h2>
+                        <p><span class="glyphicon glyphicon-time"></span> {{ activity.start_time }}</p>
+                        <p><span class="glyphicon glyphicon-user"></span> {{ activity.creator }}</p>
+                        <p><span class="glyphicon glyphicon-map-marker"></span> {{ activity.address }}</p>
+                        {% if activity.desc|length > 25 %}
+                            <p><span class="glyphicon glyphicon-tag"></span> {{ activity.desc|default:"无" | truncatechars:25}}...</p>
+                            {% else %}
+                            <p><span class="glyphicon glyphicon-tag"></span> {{ activity.desc|default:"无"}}</p>
+                        {% endif %}
+                        <hr>
+                    </div>
+                {% endfor %}
+
+                <!-- Pager -->
+                <div class="col-md-12">
+                    <div class="pager" >
+                      <span class="step-links">
+                        {% if joined_activities_list.has_previous %}
+                          <li class="previous"><a href="?page={{ joined_activities_list.previous_page_number }}"><span aria-hidden="true">&larr;</span>上一页</a>
+                        {% endif %}
+                          {% if joined_activities_list.has_next %}
+                            <li class="next"><a href="?page={{ joined_activities_list.next_page_number }}">下一页<span aria-hidden="true">&rarr;</span></a>
+                        {% endif %}
+                          <span class="current">
+                              {% if activities_list.number and activities_list.paginator.num_pages%}
+                                第 {{ activities_list.number }} 页，共 {{ activities_list.paginator.num_pages }} 页
+                              {% else %}
+                                第 1 页，共 1 页
+                              {% endif %}
+                          </span>
+                      </span>
+                    </div>
+                </div>
+            </div>
+
+    </div> <!-- /container -->
+{% endblock %}

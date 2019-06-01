@@ -1,0 +1,293 @@
+﻿﻿{% extends 'base.html' %}
+{% load staticfiles %}
+{% load bootstrap3 %}
+{% block title %}{{ activity.title }}{% endblock %}
+{% block css %}<link href="{% static 'css/activity_detail.css' %}" rel="stylesheet"/>{% endblock %}
+{% block content %}
+    <!-- Page Content -->
+    <div class="container">
+
+        <div class="row">
+
+            <!-- Entries Column -->
+            <div class="col-md-8">
+                <h1 class="page-header">
+                    {{ activity.title }}
+                    <small>活动详情</small>
+                    <hr>
+                    {% if message %}
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h5>{{ message }}</h5>
+                        </div>
+                    {% endif %}
+                    {% if request.session.nav_msg %}
+                        <div class="alert alert-warning alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h5>您没有上传个人照片不能加入任何活动，请尽快到<a href="{% url 'userApp:profile' %}" class="alert-link">个人中心</a>完善个人资料</h5>
+                        </div>
+                    {% endif %}
+                </h1>
+                <h2>
+                    {% if activity.isActive %}
+                        <small>活动不可加入</small>
+                    {% else %}
+                        <small>活动未开始</small>
+                    {% endif %}
+
+                    {% if activity.creator == request.user %}
+                        {% if activity.isActive %}
+                            <a class="btn btn-success"  href="{% url 'activityApp:sign_condition' activity.id %}">
+                                开放活动<span class="glyphicon glyphicon glyphicon-off"></span></a>
+                            {% if sum_guest > 0 %}
+                                <a class="btn btn-primary" data-aid="{{ activity.id }}" id="signBtn" data-toggle="modal" data-target="#signModal">
+                                    开始签到<span class="glyphicon glyphicon glyphicon-eye-open"></span></a>
+{#                                <a class="btn btn-primary" href="{% url 'activityApp:sign' activity.id %}">#}
+{#                                    开始签到<span class="glyphicon glyphicon glyphicon-eye-open"></span></a>#}
+                            {% endif %}
+                        {% else %}
+                            <a class="btn btn-warning"  href="{% url 'activityApp:sign_condition' activity.id %}">
+                                关闭活动<span class="glyphicon glyphicon glyphicon-off"></span></a>
+                            <a class="btn btn-primary"  data-toggle="modal" data-target="#updateModal">修改活动信息 <span class="glyphicon glyphicon glyphicon-cog"></span></a>
+                            <a class="btn btn-danger"  data-toggle="modal" data-target="#deleteModal">删除活动 <span class="glyphicon glyphicon glyphicon-trash"></span></a>
+                        {% endif %}
+                        <br>
+                    {% else %}
+                        {% if not activity.isActive %}
+                            {% if not request.user in signed_guest_list %}
+                             {% if joined %}
+                                <a class="btn btn-danger" href="{% url 'activityApp:join' activity.id %}">退出活动 <span class="glyphicon glyphicon glyphicon-check"></span></a>
+                            {% else %}
+                                <a class="btn btn-primary" href="{% url 'activityApp:join' activity.id %}">加入活动 <span class="glyphicon glyphicon-chevron-right"></span></a>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                    {% endif %}
+                </h2>
+
+                <p><span class="glyphicon glyphicon-time"></span> {{ activity.start_time }}</p>
+                <p><span class="glyphicon glyphicon-map-marker"></span> {{ activity.address }}</p>
+                {% if activity.desc %}
+                    <p><span class="glyphicon glyphicon-tag"></span> {{ activity.desc }}</p>
+                {% else %}
+                    <p><span class="glyphicon glyphicon-tag"></span> 无活动简述</p>
+                {% endif %}
+
+                <br>
+                <h2><small>嘉宾名单</small></h2>
+                {% if guests %}
+                    {% for guest in guests %}
+                        <div class="col-sm-2 col-md-2">
+                             <div class="avatar-view guest-avatar" title="点击更改嘉宾签到状态" >
+                                <a class="thumbnail" href="{% url 'activityApp:guest' activity.id guest.id %}">
+                                    {% if guest in signed_guest_list %}
+                                    <img src="{{guest.profile.avatar.url}}" alt="用户头像">
+                                    {% else %}
+                                    <img src="/media/avatar/default.png" alt="默认头像">
+                                    {% endif %}
+                                </a>
+                             </div>
+                            <p style="margin-top: 5px;margin-left: 10px"><span class="glyphicon glyphicon-user"></span> {{ guest.username }}</p>
+                            <p> ({{ guest.std_num }})</p>
+                        </div>
+                {% endfor %}
+                {% else %}
+                    <p>空</p>
+                {% endif %}
+
+            </div>
+
+            <!--Sidebar Widgets Column -->
+            <div class="col-md-4">
+                <!-- Creator Profile Well -->
+                <div class="panel panel-primary hidden-xs">
+                    <div class="panel-heading">活动创建者</div>
+                      <div class="panel-body">
+                          <div class="col-sm-4 col-md-4">
+                             <a href="#" class="thumbnail creator-avatar">
+                                 <img src="{{ activity.creator.profile.avatar.url }}"  alt="img loading...">
+                             </a>
+                         </div>
+                          <p><span class="glyphicon glyphicon-user"></span> {{ activity.creator }}</p>
+                      </div>
+                </div>
+
+                <!-- Blog Search Well -->
+                <div class="panel panel-success">
+                    <div class="panel-heading">签到情况统计</div>
+                  <div class="panel-body">
+                    <h4>签到情况统计</h4>
+                      共{{ sum_guest }}位嘉宾<br>已签到{{ signed_guest_count }}人，未签到{{ unsigned_guest_count }}人<br>
+                      {% if sum_guest != 0 and activity.isActive %}
+                            签到率 {{ sign_rate }} %<br>
+                      {% endif %}
+                  </div>
+                </div>
+
+                <!-- Side Widget Well -->
+                <div class="panel panel-info">
+                    <div class="panel-heading">公告栏</div>
+                  <div class="panel-body">
+                      {% if activity.notice %}
+                          <p>{{ activity.notice }}</p>
+                          {% else %}
+                          <p>创建者还未发布任何公告</p>
+                      {% endif %}
+                  </div>
+                </div>
+
+
+            </div>
+
+        </div>
+        <!-- /.row -->
+
+    </div>
+    <!-- /.container -->
+
+     <!-- update Activity Modal -->
+    <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">修改活动信息</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form" action="{% url 'activityApp:update' activity.id %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% bootstrap_form update_form %}
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit"  class="btn btn-primary">确定</button>
+                  </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div><!-- /.update Activity Modal -->
+    <!-- delete Activity Modal -->
+    <div class="modal fade bs-example-modal-sm" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h4>确认删除该活动吗？</h4>
+            </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+              <a class="btn btn-danger" href="{% url 'activityApp:delete' activity.id %}">确定</a>
+          </div>
+        </div>
+      </div>
+    </div><!-- /.update Activity Modal -->
+
+     <div class="modal fade bs-example-modal-sm" id="signModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="camera-container">
+            <video class="camera" width="640" height="480" id="video" preload autoplay loop muted style="position: absolute"></video>
+            <canvas class="camera" width="640" height="480" id="canvas" style="position: absolute"></canvas>
+              <div class="label label-success show-sign-status" style="position: absolute;font-size: 15px"></div>
+          </div>
+        </div>
+            <div class="container"  >
+                <div class="show-error-status label label-danger" style="position: absolute;font-size: 15px"></div>
+            </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal" style="position: absolute">关闭</button>
+        </div>
+      </div>
+    </div><!-- /.sign Activity Modal -->
+
+{% endblock %}
+{% block js %}
+
+    <script type="text/javascript" src="{% static 'js/tracking/tracking-min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/tracking/face-min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/myJS.js' %}"></script>
+    <script type="text/javascript">
+        // 获取摄像头 人脸捕捉
+        $('#signBtn').click(function () {
+            //激活摄像头
+            navigator.getUserMedia  = navigator.getUserMedia ||
+              navigator.webkitGetUserMedia ||
+              navigator.mozGetUserMedia ||
+              navigator.msGetUserMedia;
+            navigator.getUserMedia({video:true}, gotStream, noStream);
+
+            function gotStream(stream) {
+              video.src = URL.createObjectURL(stream);
+              video.onerror = function () {
+                stream.stop();
+              };
+              stream.onended = noStream;
+              video.onloadedmetadata = function () {
+                alert('摄像头成功打开！');
+              };
+            }
+            function noStream(err)
+            {
+              alert(err);
+            }
+
+              var aid = $(this).data('aid');
+              var canvas = document.getElementById('canvas');
+              var context = canvas.getContext('2d');
+              var tracker = new tracking.ObjectTracker(['face']);
+                 tracker.setInitialScale(4);
+                 tracker.setStepSize(2);
+                 tracker.setEdgesDensity(0.1);
+                 tracker.on('track', function(event) {
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                    if (event.data.length > 0){
+                        //如果画面中有人脸
+                         context.drawImage(video,0,0,canvas.width, canvas.height);
+                         event.data.forEach(function(rect) {
+                            //在图中画框框
+                             context.strokeStyle = '#019999';
+                             context.lineWidth = 7;
+                             context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+                             context.font = '20px Helvetica';
+                             context.fillStyle = "#fff";
+                             context.fillText('Hello!' , rect.x + rect.width + 5, rect.y + 11);
+                           });
+                         //上传画面数据
+                        var snapData = canvas.toDataURL('image/png');
+                        uploadImage(snapData, aid)
+                    }
+              });
+              tracking.track('#video', tracker, { camera: true });
+        });
+
+        // 图片上传方法
+        function uploadImage(faceImg, aid) {
+            $.ajax({
+                type: "POST",
+                url: "/activity/sign/",
+                beforeSend: function (xhr, setting) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                dataType: 'json',
+                data: {
+                    "faceImg": faceImg,
+                    'aid': aid,
+                },
+                success: function (data) {
+                    // 返回成功
+                    if(data.msg === 'ok'){
+                        $('div.show-error-status').html('');
+                        $('div.show-sign-status').html(data.guest + '已签到成功' );
+                    }else{
+                        $('div.show-sign-status').html('');
+                        $('div.sign-error-status').html( '签到失败：未知用户');
+                    }
+                },
+                error: function (data) {
+                    // 返回失败
+                    $('div.show-sign-status').html('');
+                    $('div.show-error-status').html('验证失败');
+                },
+            });
+        }
+    </script>
+{% endblock %}

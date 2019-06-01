@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load bootstrap3 %}      <!-- 加载bootstrap3应用  -->
+{% block title %}Sea Lion - 注册{% endblock %}
+{% block css %}<link href="{% static 'css/login.css' %}" rel="stylesheet"/>{% endblock %}
+
+{% block content %}
+    <div class="container">
+    <h1 class="title">Welcome to join us!</h1>
+    <hr>
+        <div class="col-md-6 col-md-offset-4">
+            <form style="max-width: 350px" action="{% url 'userApp:register'%}" method="post">
+
+              {% if register_error %}
+                  <div class="alert alert-warning">{{ register_error }}</div>
+              {% endif %}
+
+              {% csrf_token %}
+
+              {% bootstrap_form register_form %}
+              <div class="modal-footer">
+                  <button type="reset" class="btn btn-default pull-left">重置</button>
+                  <button type="submit" class="btn btn-primary pull-right">提交</button>
+              </div>
+
+            </form>
+        </div>
+
+    </div> <!-- /container -->
+{% endblock %}

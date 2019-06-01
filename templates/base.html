@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load cache %}
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="generator" content="Bootply" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>{% block title %}base{% endblock %}</title>
+    <link rel="shortcut icon" href="/media/sys_images/favicon.ico/" type="image/x-icon" />
+    <!-- Bootstrap -->
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="{% static 'css/base.css' %}" rel="stylesheet">
+
+    {% block css %}{% endblock %}
+  </head>
+
+  <body>
+  <div class="navbar-wrapper" >
+      <div class="container" >
+        <div class="navbar navbar-inverse navbar-static-top ">
+
+            <div class="navbar-header">
+                <a class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </a>
+                <a class="navbar-brand" href="{% url 'activityApp:index' %}">Sea Lion</a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="my-nav">
+              <ul class="nav navbar-nav navbar-right">
+                  {% if request.session.is_login %}
+                      <li class="dropdown">
+                            <a href="{% url 'userApp:profile' %}" class="dropdown-toggle" data-toggle="dropdown">
+                            <img class="navbar-avatar img-circle" src="{{ request.user.profile.avatar.url }}" alt="user_avatar">{{ request.user.nick_name }} <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{% url 'userApp:profile' %}" target="_blank"><i class="fa fa-cog"></i> 个人主页</a></li>
+                                <li><a href="{% url 'userApp:created' %}" target="_blank"><i class="fa fa-cog"></i> 我创建的活动</a></li>
+                                <li><a href="{% url 'userApp:joined' %}" target="_blank"><i class="fa fa-cog"></i> 我加入的活动</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">帮助</a></li>
+                                <li><a href="{% url 'userApp:logout' %}">退出登录</a></li>
+                            </ul>
+                      </li>
+                  {% else %}
+                      <li><a href="{% url 'userApp:login' %}" target="_blank">登录</a></li>
+                      <li><a href="{% url 'userApp:register' %}" target="_blank">注册</a></li>
+                  {% endif %}
+              </ul>
+            </div>
+
+        </div>
+      </div><!-- /container -->
+    </div><!-- /navbar wrapper -->
+
+    {% block content %}{% endblock %}
+        <!-- Footer -->
+      {% cache 600 sidebar %}
+        <div class="container ">
+            <footer class="footer">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <a href="http://xxxy.hainnu.edu.cn/" aria-hidden="true"  role="button" tabindex="0" target="_blank">Follow @Hainnu</a>
+                    </div><!-- /.col-lg-12 -->
+                </div>
+            </footer><!-- Footer -->
+        </div>
+      {% endcache %}
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+
+    <script src="{% static 'js/jquery-3.2.1.js' %}"></script>
+    <script src="{% static 'bootstrap-3.3.7-dist/js/jquery.min.js' %}"></script>
+      <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    {% block js %}{% endblock %}
+    <script type="text/javascript" src="https://cdn.bootcss.com/canvas-nest.js/1.0.1/canvas-nest.min.js"></script>
+
+
+
+  </body>
+</html>

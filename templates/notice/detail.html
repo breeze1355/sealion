@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load bootstrap3 %}
+{% block title %}{{ notice.title }}{% endblock %}
+{% block css %}<link href="{% static 'css/notice_detail.css' %}" rel="stylesheet"/>{% endblock %}
+{% block content %}
+    <!-- Page Content -->
+    <div class="container">
+        <!-- Entries Column -->
+        <h1 class="text-center">
+            {{ notice.title }}
+
+            {% if request.user.is_staff %}
+                <a class="btn btn-primary"  data-toggle="modal" data-target="#updateModal">修改公告 <span class="glyphicon glyphicon glyphicon-edit"></span></a>
+                <a class="btn btn-danger"  data-toggle="modal" data-target="#deleteModal">删除公告 <span class="glyphicon glyphicon glyphicon-trash"></span></a>
+             {% endif %}
+
+            <hr>
+            {% if notice_update_message %}
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h5>{{ notice_update_message }}</h5>
+                </div>
+            {% endif %}
+            {% if request.session.nav_msg %}
+                <div class="alert alert-warning alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h5>您没有上传个人照片不能加入任何活动，请尽快到<a href="{% url 'userApp:profile' %}" class="alert-link">个人中心</a>完善个人资料</h5>
+                </div>
+            {% endif %}
+        </h1>
+
+        <div class="notice">
+            <p class="para">{{ notice.content }}</p>
+            <br><br><br>
+            <p class="inscribe">{{ notice.c_time| date:"Y年m月d日" }}</p>
+        </div>
+
+    </div>
+    <!-- /.container -->
+
+     <!-- update notice Modal -->
+    <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">修改公告</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form" action="{% url 'noticeApp:update' notice.id %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% bootstrap_form update_form %}
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit"  class="btn btn-primary">确定</button>
+                  </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div><!-- /.update notice Modal -->
+
+    <!-- delete notice Modal -->
+    <div class="modal fade bs-example-modal-sm" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h4>确认删除该公告吗？</h4>
+            </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+              <a class="btn btn-danger" href="{% url 'noticeApp:delete' notice.id %}">确定</a>
+          </div>
+        </div>
+      </div>
+    </div><!-- /.update notice Modal -->
+
+
+
+{% endblock %}

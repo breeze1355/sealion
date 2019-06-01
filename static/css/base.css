@@ -1,0 +1,92 @@
+/* BOOTSTRAP 3.x GLOBAL STYLES
+-------------------------------------------------- */
+
+html {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+body {
+  width: 100vw;
+  overflow: hidden;
+  padding-top: 70px;
+  padding-bottom: 40px;
+  background-image: url("/media/sys_images/site_background.png");
+
+}
+
+footer {
+    margin: 50px 0;
+}
+
+.footer{
+  bottom: 0;
+  width: 100%;
+}
+
+/* CUSTOMIZE THE NAVBAR
+-------------------------------------------------- */
+
+/* Special class on .container surrounding .navbar, used for positioning it into place. */
+
+.navbar{
+  background-image: url("/media/sys_images/nav_background.png");
+}
+
+.navbar-wrapper {
+  position: absolute;
+  padding-left: calc(100vw - 100%);
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.navbar-brand{
+  font-family: "Ink Free",sans-serif;
+  font-size: xx-large;
+  padding-top: 14px;
+  padding-bottom: 0;
+  line-height: 28px;
+}
+.navbar-nav {
+  margin-right: auto;
+}
+.navbar-avatar{
+  width:32px;
+  height: 32px;
+  margin-right: 7px;
+}
+
+
+.navbar-nav>li>a.profile-image {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+
+.page-header{
+    font-family:'Ink Free',sans-serif;
+}
+
+/* RESPONSIVE CSS
+-------------------------------------------------- */
+
+@media (min-width: 768px) {
+
+  /* Remve the edge padding needed for mobile */
+  .marketing {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Navbar positioning foo */
+  .navbar-wrapper {
+    margin-top: 10px;
+    margin-bottom: -90px; /* Negative margin to pull up carousel. 90px is roughly margins and height of navbar. */
+  }
+  /* The navbar becomes detached from the top, so we round the corners */
+  .navbar-wrapper .navbar {
+    border-radius: 4px;
+  }
+
+
+}
