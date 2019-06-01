@@ -213,7 +213,7 @@
             navigator.getUserMedia({video:true}, gotStream, noStream);
 
             function gotStream(stream) {
-              video.src = URL.createObjectURL(stream);
+              video.srcObject = stream;
               video.onerror = function () {
                 stream.stop();
               };
@@ -249,7 +249,7 @@
                              context.fillText('Hello!' , rect.x + rect.width + 5, rect.y + 11);
                            });
                          //上传画面数据
-                        var snapData = canvas.toDataURL('image/png');
+                        var snapData = canvas.toDataURL('image/jpeg');
                         uploadImage(snapData, aid)
                     }
               });
