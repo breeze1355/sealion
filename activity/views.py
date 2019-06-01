@@ -162,7 +162,8 @@ class Activity_Rec(LoginRequiredMixin, View):
         ImgCount = files.__len__()
         if ImgCount > 10:
             # 图片超过100个，删除一个
-            os.remove(file_path +'\\'+ files[0])
+            del_path = os.path.join(file_path,files[0])
+            os.remove(del_path)
 
         unknown_face_tmp_encoding = []
         try:
