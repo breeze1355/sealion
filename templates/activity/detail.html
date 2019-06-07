@@ -186,10 +186,10 @@
             <canvas width="640" height="480" id="canvas" style="position: absolute"></canvas>
               <div class="label label-success show-sign-status" style="position: absolute;font-size: 15px"></div>
           </div>
+        <div class="container"  >
+            <div class="label label-danger show-error-status" style="position: absolute;font-size: 15px"></div>
         </div>
-            <div class="container"  >
-                <div class="show-error-status label label-danger" style="position: absolute;font-size: 15px"></div>
-            </div>
+        </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal" style="position: absolute">关闭</button>
         </div>
@@ -272,16 +272,14 @@
                 success: function (data) {
                     // 返回成功
                     if(data.msg === 'ok'){
-                        $('div.show-error-status').html('');
                         $('div.show-sign-status').html(data.guest + '已签到成功' );
-                    }else{
-                        $('div.show-sign-status').html('');
-                        $('div.sign-error-status').html( '签到失败：未知用户');
+                    }
+                    if(data.msg === 'failed'){
+                        $('div.show-error-status').html( '签到失败：未知用户');
                     }
                 },
                 error: function (data) {
                     // 返回失败
-                    $('div.show-sign-status').html('');
                     $('div.show-error-status').html('验证失败');
                 },
             });

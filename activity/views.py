@@ -137,6 +137,7 @@ class Activity_Rec(LoginRequiredMixin, View):
         global know_std_num
         global msg
         global result
+        unknown_face_tmp_encoding = []
         # 获取base64格式的图片
         aid = request.POST.get('aid')
         activity = get_object_or_404(Activity, id=aid)
@@ -160,19 +161,17 @@ class Activity_Rec(LoginRequiredMixin, View):
         files = os.listdir(file_path)
         files.sort()
         ImgCount = files.__len__()
-        if ImgCount > 10:
-            # 图片超过100个，删除一个
-            del_path = os.path.join(file_path,files[0])
-            os.remove(del_path)
-
-        unknown_face_tmp_encoding = []
         try:
+            if ImgCount > 10:
+                # 图片超过100个，删除一个
+                del_path = os.path.join(file_path, files[0])
+                os.remove(del_path)
             unknown_face = fr.load_image_file(_file)
             unknown_face_tmp_encoding = fr.face_encodings(unknown_face)
         except IndexError:
-            pass  # 图片中未发现人脸
+            msg = 'failed'  # 图片中未发现人脸
         except IOError:
-            pass  # 图片中未发现人脸
+            msg = 'failed'  # 图片中未发现人脸
 
         # 对图片进行人脸识别比对
         for face_encoding in unknown_face_tmp_encoding:
@@ -190,7 +189,8 @@ class Activity_Rec(LoginRequiredMixin, View):
                         activity.signed_in_users.add(result)
                         activity.save()
             except:
-                msg = ''
+                msg = 'failed'
+        print(msg)
         return JsonResponse({'guest':str(result),'msg': msg})
 
 
