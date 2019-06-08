@@ -12,7 +12,6 @@ from billboard.forms import UpdateForm,NoticeForm
 from SeaLion import settings
 
 # Create your views here.
-@login_required(login_url=settings.LOGIN_URL)
 def billboard_display(request):
     """
     展示活动公告列表
@@ -32,7 +31,6 @@ def billboard_display(request):
     return render(request, 'notice/billboard.html', locals())
 
 
-@login_required(login_url=settings.LOGIN_URL)
 def notice_detail(request, nid):
     """
     公告详情

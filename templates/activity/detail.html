@@ -226,7 +226,7 @@
             {
               alert(err);
             }
-
+              var video = document.getElementById('video');
               var aid = $(this).data('aid');
               var canvas = document.getElementById('canvas');
               var context = canvas.getContext('2d');
@@ -238,7 +238,7 @@
                     context.clearRect(0, 0, canvas.width, canvas.height);
                     if (event.data.length > 0){
                         //如果画面中有人脸
-                         context.drawImage(video,0,0,canvas.width, canvas.height);
+                         context.drawImage(video, 0, 0, canvas.width, canvas.height);
                          event.data.forEach(function(rect) {
                             //在图中画框框
                              context.strokeStyle = '#019999';

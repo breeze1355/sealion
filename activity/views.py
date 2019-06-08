@@ -167,16 +167,18 @@ class Activity_Rec(LoginRequiredMixin, View):
                 # 图片超过100个，删除一个
                 del_path = os.path.join(file_path, files[0])
                 os.remove(del_path)
+        except BaseException:
+            pass
+        try:
             unknown_face = fr.load_image_file(_file)
             unknown_face_tmp_encoding = fr.face_encodings(unknown_face)
-        except IndexError:
+        except BaseException:
             msg = 'failed'  # 图片中未发现人脸
-        except IOError:
-            msg = 'failed'  # 图片中未发现人脸
+
 
         # 对图片进行人脸识别比对
         for face_encoding in unknown_face_tmp_encoding:
-            matches = fr.compare_faces(known_face_encodings, face_encoding, 0.45)
+            matches = fr.compare_faces(known_face_encodings, face_encoding, 0.47)
             face_distances = fr.face_distance(known_face_encodings, face_encoding)
             try:
                 best_match_index = np.argmin(face_distances)
