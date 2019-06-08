@@ -138,6 +138,7 @@ class Activity_Rec(LoginRequiredMixin, View):
         global msg
         global result
         unknown_face_tmp_encoding = []
+        msg = 'failed'
         # 获取base64格式的图片
         aid = request.POST.get('aid')
         activity = get_object_or_404(Activity, id=aid)

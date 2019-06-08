@@ -184,13 +184,13 @@
           <div class="container">
             <video width="640" height="480" id="video" preload autoplay loop muted style="position: absolute"></video>
             <canvas width="640" height="480" id="canvas" style="position: absolute"></canvas>
-              <div class="label label-success show-sign-status" style="position: absolute;font-size: 15px"></div>
           </div>
-        <div class="container"  >
-            <div class="label label-danger show-error-status" style="position: absolute;font-size: 15px"></div>
+            <div class="container">
+                <div class="label camera-msg-label label-success show-sign-status"></div>
+                <div class="label camera-msg-label label-danger show-error-status"></div>
+            </div>
         </div>
-        </div>
-        <div class="modal-footer">
+        <div class="modal-footer col-lg-offset-1">
           <button type="button" class="btn btn-default" data-dismiss="modal" style="position: absolute">关闭</button>
         </div>
       </div>
@@ -272,7 +272,8 @@
                 success: function (data) {
                     // 返回成功
                     if(data.msg === 'ok'){
-                        $('div.show-sign-status').html(data.guest + '已签到成功' );
+                        $('div.show-error-status').html( '');
+                        $('div.show-sign-status').html(data.guest + ' 签到成功' );
                     }
                     if(data.msg === 'failed'){
                         $('div.show-error-status').html( '签到失败：未知用户');
